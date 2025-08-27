@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package xray.app.lasthandshake.command;
+package lasthandshake_libxray;
 
 option go_package = "xray/";
 
