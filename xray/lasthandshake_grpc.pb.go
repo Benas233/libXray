@@ -20,7 +20,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	LasthandshakeService_GetLastHandshake_FullMethodName = "/xray.app.lasthandshake.command.LasthandshakeService/GetLastHandshake"
+	LasthandshakeService_GetLastHandshake_FullMethodName = "/lasthandshake_libxray.LasthandshakeService/GetLastHandshake"
 )
 
 // LasthandshakeServiceClient is the client API for LasthandshakeService service.
@@ -109,7 +109,7 @@ func _LasthandshakeService_GetLastHandshake_Handler(srv interface{}, ctx context
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var LasthandshakeService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "xray.app.lasthandshake.command.LasthandshakeService",
+	ServiceName: "lasthandshake_libxray.LasthandshakeService",
 	HandlerType: (*LasthandshakeServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
