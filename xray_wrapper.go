@@ -1,5 +1,5 @@
 // libXray is an Xray wrapper focusing on improving the experience of Xray-core mobile development.
-package libXray
+package main
 
 import (
 	"encoding/base64"
@@ -222,13 +222,15 @@ func XrayVersion() string {
 	var response nodep.CallResponse[string]
 	return response.EncodeToBase64(xray.XrayVersion(), nil)
 }
-// Query last client handshake
-func QueryLasthandshake(serverLoc string) string {
-	var response nodep.CallResponse[string]
-	res, err := xray.QueryLasthandshake(serverLoc)
-	if err != nil {
-		return response.EncodeToBase64("QueryLasthandshake failed", err)
 
+// Query last client handshake
+func QueryLasthandshakeMobile(base64Text string) string {
+	var response nodep.CallResponse[string]
+	serverBytes, err := base64.StdEncoding.DecodeString(base64Text)
+	if err != nil {
+		return response.EncodeToBase64("", err)
 	}
+	server := string(serverBytes)
+	res := xray.QueryLasthandshake(server)
 	return response.EncodeToBase64(res, nil)
 }
