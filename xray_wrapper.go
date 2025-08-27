@@ -222,3 +222,13 @@ func XrayVersion() string {
 	var response nodep.CallResponse[string]
 	return response.EncodeToBase64(xray.XrayVersion(), nil)
 }
+// Query last client handshake
+func QueryLasthandshake(serverLoc string) string {
+	var response nodep.CallResponse[string]
+	res, err := xray.QueryLasthandshake(serverLoc)
+	if err != nil {
+		return response.EncodeToBase64("QueryLasthandshake failed", err)
+
+	}
+	return response.EncodeToBase64(res, nil)
+}
