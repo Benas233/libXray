@@ -1,5 +1,5 @@
 // libXray is an Xray wrapper focusing on improving the experience of Xray-core mobile development.
-package libXray
+package main
 
 import (
 	"encoding/base64"
