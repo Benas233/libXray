@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/xtls/xray-core/infra/conf"
-	"github.com/xtls/xray-core/proxy/vless"
 )
 
 // https://github.com/XTLS/Xray-core/discussions/716
@@ -18,7 +17,7 @@ import (
 func ConvertShareLinksToXrayJson(links string) (*conf.Config, error) {
 	text := strings.TrimSpace(links)
 	if strings.HasPrefix(text, "{") {
-		var xray conf.Config
+		var xray *conf.Config
 		err := json.Unmarshal([]byte(text), &xray)
 		if err != nil {
 			return nil, err
@@ -29,7 +28,7 @@ func ConvertShareLinksToXrayJson(links string) (*conf.Config, error) {
 			return nil, fmt.Errorf("no valid outbounds")
 		}
 
-		return &xray, nil
+		return xray, nil
 	}
 
 	text = FixWindowsReturn(text)
@@ -263,40 +262,29 @@ func (proxy xrayShareLink) vlessOutbound() (*conf.OutboundDetourConfig, error) {
 
 	query := proxy.link.Query()
 
-	user := &vless.Account{}
-	id, err := url.QueryUnescape(proxy.link.User.String())
-	if err != nil {
-		return nil, err
-	}
-	user.Id = id
-	flow := query.Get("flow")
-	if len(flow) > 0 {
-		user.Flow = flow
-	}
-
-	encryption := query.Get("encryption")
-	if len(encryption) > 0 {
-		user.Encryption = encryption
-	} else {
-		user.Encryption = "none"
-	}
-
-	vnext := &conf.VLessOutboundVnext{}
-	vnext.Address = parseAddress(proxy.link.Hostname())
+	settings := &conf.VLessOutboundConfig{}
+	settings.Address = parseAddress(proxy.link.Hostname())
 	port, err := strconv.Atoi(proxy.link.Port())
 	if err != nil {
 		return nil, err
 	}
-	vnext.Port = uint16(port)
-
-	userRawMessage, err := convertJsonToRawMessage(user)
+	settings.Port = uint16(port)
+	id, err := url.QueryUnescape(proxy.link.User.String())
 	if err != nil {
 		return nil, err
 	}
-	vnext.Users = []json.RawMessage{userRawMessage}
+	settings.Id = id
+	flow := query.Get("flow")
+	if len(flow) > 0 {
+		settings.Flow = flow
+	}
 
-	settings := &conf.VLessOutboundConfig{}
-	settings.Vnext = []*conf.VLessOutboundVnext{vnext}
+	encryption := query.Get("encryption")
+	if len(encryption) > 0 {
+		settings.Encryption = encryption
+	} else {
+		settings.Encryption = "none"
+	}
 
 	settingsRawMessage, err := convertJsonToRawMessage(settings)
 	if err != nil {
@@ -494,7 +482,7 @@ func (proxy xrayShareLink) streamSettings(link *url.URL) (*conf.StreamConfig, er
 
 		extra := query.Get("extra")
 		if len(extra) > 0 {
-			var extraConfig conf.SplitHTTPConfig
+			var extraConfig *conf.SplitHTTPConfig
 			err := json.Unmarshal([]byte(extra), &extraConfig)
 			if err != nil {
 				return nil, err
